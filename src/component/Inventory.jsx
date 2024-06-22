@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react'
-
+import {jsPDF} from 'jspdf';
+import 'jspdf-autotable';
 export const Inventory = () => {
     const[price,setPrice]=useState(0);
     const[qty,setQty]=useState(0);
@@ -51,7 +52,40 @@ export const Inventory = () => {
            function refreshPage(){
             window.location.reload();
            }
-       
+           const createHeaders= keys => {
+            const result = [];
+            for(let key of keys){
+                result.push({
+                    id: key,
+                    name:key,
+                    prompt:key,
+                });
+            }
+            return result;
+           }
+        const exportPdf = async ()=>{
+            const headers = createHeaders([
+                'name',
+                'price',
+                'qty',
+                'sum',
+            ]) 
+            const doc = new jsPDF();
+           
+      
+        const tableData =user?.map((row)=>({
+            ...row,
+            name:row.name.toString(),
+           price:row. price.toString(),
+         qty: row.qty.toString(),
+        sum:row. sum.toString(),
+
+
+        }));
+        console.log({tableData});
+        doc.table(1,1, tableData, headers, {autoSize: true})
+        doc.save('data.pdf');
+        }
   return (
     <>
     <div className='container-fluid bg-2 text-center'>
@@ -61,6 +95,7 @@ export const Inventory = () => {
 
         <div className='col-sm-8 '>
         <h3 className='py-2'>Add products</h3>
+            <div >
             <table className='table table-bordered'>
            
             <tr>
@@ -102,7 +137,9 @@ export const Inventory = () => {
                 </td>
             </tr>
             </table>
+            </div>
            <h3>Products</h3>
+           <div>
            <table className='table table-bordered'>
             <thead>
                 <tr>
@@ -124,7 +161,8 @@ export const Inventory = () => {
                     ))}
                  </tbody>
            </table>
-
+           </div>
+          
         </div>
 
         <div className='col-sm-4'>
@@ -134,6 +172,7 @@ export const Inventory = () => {
                 <br />
                 <button type='button' className='btn btn-success' onClick={refreshPage}>
                     <span>Complete</span></button>
+                <button type='button' className='btn btn-primary' onClick={exportPdf}>Print</button>
             </div>
         </div>
         </div>
